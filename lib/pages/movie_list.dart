@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:imd_assignment/models/movies.dart';
 import 'package:imd_assignment/provider/homePageProvider.dart';
 import 'package:provider/provider.dart';
 
 Widget moviesList(BuildContext context, Future<Movies> _movies) {
-  return Consumer<HomePageProvider>(
-    builder: (context, data, child) {
+  return Consumer<HomePageProvider>(builder: (context, data, child) {
+    if (_movies != null) {
       return Container(
-        height: MediaQuery
-            .of(context)
-            .size
-            .height / 1.5,
+        height: MediaQuery.of(context).size.height / 1.5,
         child: FutureBuilder<Movies>(
           future: _movies,
           builder: (context, AsyncSnapshot<Movies> snapshot) {
@@ -23,8 +21,8 @@ Widget moviesList(BuildContext context, Future<Movies> _movies) {
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                       decoration: BoxDecoration(
-                          boxShadow: kElevationToShadow[4], color: Colors
-                          .white),
+                          boxShadow: kElevationToShadow[4],
+                          color: Colors.white),
                       child: listItemMovie(movie),
                     ),
                   );
@@ -32,13 +30,45 @@ Widget moviesList(BuildContext context, Future<Movies> _movies) {
               );
             }
             return Center(
-              child: CircularProgressIndicator(),
+              child: Container(
+                child: errorBox(
+                    errorMessage: (snapshot.data!=null)?
+                    snapshot.data!.errorMessage:null,
+                ),
+              ),
             );
           },
         ),
       );
+    } else {
+      return Container(
+        height: MediaQuery.of(context).size.height - 200,
+        child: errorBox(),
+      );
     }
-  );
+  });
+}
+
+Column errorBox({String? errorMessage}) {
+  return Column(
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(
+            height: 100,
+          ),
+          Text(
+            (errorMessage!=null)?errorMessage:'API Limit Crossed Wait Till Tomorrow',
+            maxLines: 3,
+            style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 3,
+                wordSpacing: 5,
+                color: Colors.red),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      );
 }
 
 Row listItemMovie(Item movie) {
@@ -100,4 +130,14 @@ Row listItemMovie(Item movie) {
       )
     ],
   );
+}
+
+void showToast(String message) {
+  Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.yellow);
 }
