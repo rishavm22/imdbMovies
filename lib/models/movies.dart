@@ -19,15 +19,14 @@ class Movies {
   };
 
   Movies getMovie(String title){
-    Movies selectedMovies;
-    List<int> num=[];
+    List<Item> selectedItems=[];
     for(var i=0; i<items.length;i++){
       if(items[i].title.toLowerCase().contains(title)) {
-        num.add(i);
+        selectedItems.add(items[i]);
       }
     }
-    selectedMovies = Movies(items: [ for(var j=0;j<num.length;j++)items[j]], errorMessage: '');
-    return selectedMovies;
+
+    return Movies(items: selectedItems, errorMessage: '');
   }
 }
 
